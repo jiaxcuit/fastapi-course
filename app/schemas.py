@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 from datetime import datetime
 
 class PostBase(BaseModel):
@@ -24,6 +24,14 @@ class Post(PostBase): # for response
     created_at: datetime
     owner_id: int # provided by path, not by user when creating a post.
     owner: UserOut
+
+    class Config:
+        orm_mode = True
+
+class PostOut(BaseModel):
+    Post: Post
+    votes: int
+
     class Config:
         orm_mode = True
 
@@ -44,3 +52,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[str] = None
+
+class Vote(BaseModel):
+    post_id: int
+    dir: conint(le=1) # problem: allows negative numbers
